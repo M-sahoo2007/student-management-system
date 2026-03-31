@@ -1,0 +1,78 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% block body %}
+
+<div class="page-wrapper">
+<div class="content container-fluid">
+
+<div class="page-header">
+<div class="row">
+<div class="col-sm-12">
+<h3 class="page-title">Departments</h3>
+<ul class="breadcrumb">
+<li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+<li class="breadcrumb-item active">Departments</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+<div class="card">
+<div class="card-header">
+<h4 class="card-title">Department List 
+<a href="{% url 'add_department' %}" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Add Department</a>
+</h4>
+</div>
+<div class="card-body">
+<div class="table-responsive">
+<table class="table table-hover table-center">
+<thead>
+<tr>
+<th>Department Name</th>
+<th>Department ID</th>
+<th>Email</th>
+<th>Mobile</th>
+<th class="text-right">Action</th>
+</tr>
+</thead>
+<tbody>
+{% for department in department_list %}
+<tr>
+<td>
+<h2 class="table-avatar">
+<a href="#">{{ department.department_name }}</a>
+</h2>
+</td>
+<td>{{ department.department_id|default:"N/A" }}</td>
+<td>{{ department.department_email|default:"N/A" }}</td>
+<td>{{ department.mobile_number|default:"N/A" }}</td>
+<td class="text-right">
+<a href="{% url 'edit_department' department.slug %}" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Edit</a>
+<a href="{% url 'delete_department' department.slug %}" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Delete</a>
+</td>
+</tr>
+{% empty %}
+<tr>
+<td colspan="5" class="text-center">No departments found</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+
+{% endblock %}

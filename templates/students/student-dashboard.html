@@ -10,11 +10,40 @@
 <div class="page-header">
 <div class="row">
 <div class="col-sm-12">
-<h3 class="page-title">Welcome Bruklin!</h3>
+<h3 class="page-title">Welcome {{ user.first_name }}!</h3>
 <ul class="breadcrumb">
-<li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
 <li class="breadcrumb-item active">Student Dashboard</li>
 </ul>
+</div>
+</div>
+</div>
+
+<!-- User Profile Card -->
+<div class="row mb-3">
+<div class="col-md-3">
+<div class="card">
+<div class="card-body text-center">
+{% if student and student.student_image %}
+   <img src="{{ student.student_image.url }}" alt="Student Image" class="rounded-circle mb-3" style="object-fit: cover; height: 120px; width: 120px;">
+{% else %}
+   <img src="{% static 'assets/img/profiles/avatar-01.jpg' %}" alt="User Image" class="rounded-circle mb-3" style="height: 120px; width: 120px;">
+{% endif %}
+<h5>{{ user.first_name }} {{ user.last_name }}</h5>
+<p class="text-muted">Student ID: {{ student.student_id }}</p>
+<a href="{% url 'profile' %}" class="btn btn-sm btn-primary">View Profile</a>
+</div>
+</div>
+</div>
+</div>
+
+<div class="row mb-3">
+<div class="col-sm-12">
+<div class="card">
+<div class="card-body">
+<a href="{% url 'student_list' %}" class="btn btn-primary"><i class="fas fa-list"></i> View All Students</a>
+<a href="{% url 'add_student' %}" class="btn btn-success"><i class="fas fa-plus"></i> Add New Student</a>
+<a href="{% url 'profile' %}" class="btn btn-info"><i class="fas fa-user-circle"></i> My Profile</a>
 </div>
 </div>
 </div>
@@ -26,11 +55,11 @@
 <div class="card-body">
 <div class="db-widgets d-flex justify-content-between align-items-center">
 <div class="db-icon">
-<i class="fas fa-book-open"></i>
+<i class="fas fa-user-graduate"></i>
 </div>
 <div class="db-info">
-<h3>04/06</h3>
-<h6>All Courses</h6>
+<h3>{{ total_students }}</h3>
+<h6>Total Students</h6>
 </div>
 </div>
 </div>
@@ -41,11 +70,11 @@
 <div class="card-body">
 <div class="db-widgets d-flex justify-content-between align-items-center">
 <div class="db-icon">
-<i class="fas fa-file-alt"></i>
+<i class="fas fa-book"></i>
 </div>
 <div class="db-info">
-<h3>40/60</h3>
-<h6>All Projects</h6>
+<h3>{{ total_classes }}</h3>
+<h6>Classes</h6>
 </div>
 </div>
 </div>
@@ -56,11 +85,11 @@
 <div class="card-body">
 <div class="db-widgets d-flex justify-content-between align-items-center">
 <div class="db-icon">
-<i class="fas fa-clipboard-list"></i>
+<i class="fas fa-award"></i>
 </div>
 <div class="db-info">
-<h3>30/50</h3>
-<h6>Test Attended</h6>
+<h3>{{ total_subjects }}</h3>
+<h6>Subjects</h6>
 </div>
 </div>
 </div>
@@ -278,9 +307,5 @@
 <script src="{%static 'assets/js/circle-progress.min.js' %}"></script>
 
 <script src="{%static 'assets/js/script.js' %}"></script>
-</body>
-
-<!-- Mirrored from preschool.dreamguystech.com/html-template/student-dashboard.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 28 Oct 2021 11:11:43 GMT -->
-</html>
 
 {% endblock %}

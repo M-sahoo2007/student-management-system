@@ -2,6 +2,14 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404,redirect
 from .models import *
 from django.contrib import messages
+from django.contrib.auth.models import User
+from school.models import Notification
+from school.utils import create_notification
+
+
+
+
+
 # Create your views here.
 
 def add_student(request):
@@ -73,7 +81,7 @@ def add_student(request):
 
 def student_list(request):
     student_list = Student.objects.select_related('parent').all()
-    unread_notification = request.user.notification_set.filter(is_read=False)
+    unread_notification = Notification.objects.filter(user=request.user, is_read=False) if request.user.is_authenticated else []
     context = {
         'student_list': student_list,
         'unread_notification': unread_notification
@@ -148,3 +156,32 @@ def delete_student(request,slug):
         create_notification(request.user, f"Deleted student: {student_name}")
         return redirect ('student_list')
     return HttpResponseForbidden()
+
+def student_dashboard(request):
+    """Student dashboard view"""
+    if not request.user.is_authenticated or not request.user.is_student:
+        return redirect('index')
+    
+    # Get student data
+    student = None
+    try:
+        student = Student.objects.filter(first_name=request.user.first_name, last_name=request.user.last_name).first()
+    except:
+        pass
+    
+    # Get statistics
+    total_students = Student.objects.count()
+    total_classes = len(set(Student.objects.values_list('student_class', flat=True)))
+    total_subjects = 0  # Can be updated if Subject model exists
+    
+    unread_notification = Notification.objects.filter(user=request.user, is_read=False)
+    context = {
+        'student': student,
+        'total_students': total_students,
+        'total_classes': total_classes,
+        'total_subjects': total_subjects,
+        'unread_notification': unread_notification,
+        'unread_notification_count': unread_notification.count()
+    }
+    return render(request, "students/student-dashboard.html", context)
+

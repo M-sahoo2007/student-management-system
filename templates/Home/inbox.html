@@ -1,0 +1,141 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Inbox</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Inbox</li>
+                    </ul>
+                </div>
+                <div class="col-auto">
+                    <a href="#" class="btn btn-primary" onclick="return confirm('Clear all notifications?')">
+                        <i class="fas fa-trash"></i> Clear All
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications List -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-inbox"></i> All Notifications
+                            <span class="badge badge-primary float-right">{{ notifications|length }}</span>
+                        </h5>
+                    </div>
+                    
+                    {% if notifications %}
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 5%;">#</th>
+                                            <th style="width: 10%;">User</th>
+                                            <th style="width: 50%;">Message</th>
+                                            <th style="width: 20%;">Date</th>
+                                            <th style="width: 15%;">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for notification in notifications %}
+                                        <tr class="{% if not notification.is_read %}table-light font-weight-bold{% endif %}">
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    {% if student and student.student_image %}
+                                                        <img src="{{ student.student_image.url }}" alt="Student Image" class="rounded-circle mr-2" style="object-fit: cover; height: 32px; width: 32px;">
+                                                    {% elif teacher and teacher.teacher_image %}
+                                                        <img src="{{ teacher.teacher_image.url }}" alt="Teacher Image" class="rounded-circle mr-2" style="object-fit: cover; height: 32px; width: 32px;">
+                                                    {% else %}
+                                                        <img src="{% static 'assets/img/profiles/avatar-01.jpg' %}" alt="User Image" class="rounded-circle mr-2" style="height: 32px; width: 32px;">
+                                                    {% endif %}
+                                                    <small>{{ notification.user.first_name }} {{ notification.user.last_name }}</small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    {% if not notification.is_read %}
+                                                        <span class="badge badge-primary mr-2">New</span>
+                                                    {% endif %}
+                                                    {{ notification.message }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">{{ notification.created_at|date:"M d, Y \a\t g:i A" }}</small>
+                                            </td>
+                                            <td>
+                                                {% if not notification.is_read %}
+                                                    <span class="badge badge-info">Unread</span>
+                                                {% else %}
+                                                    <span class="badge badge-secondary">Read</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card-body text-center py-5">
+                            <div class="mb-3">
+                                <i class="fas fa-inbox" style="font-size: 48px; color: #dee2e6;"></i>
+                            </div>
+                            <h5 class="text-muted">No Notifications</h5>
+                            <p class="text-muted">You don't have any notifications yet. Stay tuned!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Types Info -->
+        <div class="row mt-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="text-center">
+                            <i class="fas fa-user-plus" style="font-size: 32px; color: #28a745;"></i>
+                            <h6 class="mt-2">User Updates</h6>
+                            <p class="text-muted small">Notifications about new users and registrations</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="text-center">
+                            <i class="fas fa-file-alt" style="font-size: 32px; color: #007bff;"></i>
+                            <h6 class="mt-2">Data Changes</h6>
+                            <p class="text-muted small">Notifications about updates to students, teachers, and classes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="text-center">
+                            <i class="fas fa-bell" style="font-size: 32px; color: #ffc107;"></i>
+                            <h6 class="mt-2">System Alerts</h6>
+                            <p class="text-muted small">Important system messages and alerts</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

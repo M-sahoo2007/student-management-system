@@ -1,0 +1,189 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% block body %}
+         <div class="page-wrapper">
+            <div class="content container-fluid">
+               <div class="page-header">
+                  <div class="row align-items-center">
+                     <div class="col">
+                        <h3 class="page-title">Edit Teachers</h3>
+                        <ul class="breadcrumb">
+                           <li class="breadcrumb-item"><a href="{% url 'teacher_list' %}">Teachers</a></li>
+                           <li class="breadcrumb-item active">Edit Teachers</li>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-sm-12">
+                     <div class="card">
+                        <div class="card-body">
+                           <form method="POST" enctype="multipart/form-data">
+                              {% csrf_token %}
+                              <div class="row">
+                                 <div class="col-12">
+                                    <h5 class="form-title"><span>Teacher Information</span></h5>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>First Name</label>
+                                       <input type="text" class="form-control"  name ="first_name"value="{{teacher.first_name}}">
+                                    </div>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Last Name</label>
+                                       <input type="text" class="form-control" name="last_name" value="{{teacher.last_name}}">
+                                    </div>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Teacher Id</label>
+                                       <input type="text" class="form-control" name="teacher_id" value="{{teacher.teacher_id}}">
+                                    </div>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Gender</label>
+                                       <select class="form-control" name="gender">
+                                          <option value="Male" {% if teacher.gender == "Male" %}selected{% endif %}>Male</option>
+                                          <option value="Female" {% if teacher.gender == "Female" %}selected{% endif %}>Female</option>
+                                          <option value="Other" {% if teacher.gender == "Other" %}selected{% endif %}>Other</option>
+                                       </select>
+                                    </div>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Date of Birth</label>
+                                       <div>
+                                          <input type="date" class="form-control" name="date_of_birth" value="{{ teacher.date_of_birth | date:'Y M d' }}">
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Religion</label>
+                                       <input type="text" class="form-control" name="religion" value="{{teacher.religion}}">
+                                    </div>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Joining Date</label>
+                                       <div>
+                                          <input type="date" class="form-control" name="joining_date" value="{{teacher.joining_date | date:'Y M d'}}">
+                                       </div>
+                                    </div>
+                                 </div>
+                                 
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Teacher Email</label>
+                                       <div>
+                                          <input type="email" class="form-control" name="teacher_email" value="{{teacher.teacher_email }}">
+                                       </div>
+                                    </div>
+                                 </div>
+                                 
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Mobile Number</label>
+                                       <input type="text" class="form-control" name="mobile_number" value="{{teacher.mobile_number}}">
+                                    </div>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Department</label>
+                                       <input type="text" class="form-control" name="teacher_department" value="{{teacher.teacher_department}}">
+                                    </div>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Teacher Image</label>
+                                       <input type="file" class="form-control" name="teacher_image" value="{{teachers.teacher_image.url}}">
+                                    </div>
+                                 </div>
+                                 <div class="col-12">
+                                    <h5 class="form-title"><span>Parent Information</span></h5>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Father's Name</label>
+                                       <input type="text" class="form-control" name="father_name" value="{{teacher.parent.father_name}}">
+                                    </div>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Father's Occupation</label>
+                                       <input type="text" class="form-control" name="father_occupation" value="{{teacher.parent.father_occupation}}">
+                                    </div>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Father's Mobile</label>
+                                       <input type="text" class="form-control" name="father_mobile" value="{{teacher.parent.father_mobile}}">
+                                    </div>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Father's Email</label>
+                                       <input type="email" class="form-control" name="father_email" value="{{teacher.parent.father_email}}">
+                                    </div>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Mother's Name</label>
+                                       <input type="text" class="form-control" name="mother_name" value="{{teacher.parent.mother_name}}">
+                                    </div>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Mother's Occupation</label>
+                                       <input type="text" class="form-control" name="mother_occupation" value="{{teacher.parent.mother_occupation}}">
+                                    </div>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Mother's Mobile</label>
+                                       <input type="text" class="form-control" name="mother_mobile" value="{{teacher.parent.mother_mobile}}">
+                                    </div>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Mother's Email</label>
+                                       <input type="email" class="form-control" name="mother_email" value="{{teacher.parent.mother_email}}">
+                                    </div>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Present Address</label>
+                                       <textarea class="form-control" name="present_address">{{teacher.present_address}}</textarea>
+                                    </div>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                       <label>Permanent Address</label>
+                                       <textarea class="form-control" name="permanent_address">{{teacher.permanent_address}}</textarea>
+                                    </div>
+                                 </div>
+                                 <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                 </div>
+                              </div>
+                           </form>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+      <script src="{% static 'assets/js/popper.min.js' %}"></script>
+      <script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+      <script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+      <script src="{% static 'assets/js/script.js' %}"></script>
+   </body>
+   <!-- Mirrored from preschool.dreamguystech.com/html-template/edit-teacher.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 28 Oct 2021 11:11:50 GMT -->
+</html>
+
+{% endblock %}

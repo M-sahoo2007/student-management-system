@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
-from .models import CustomUser
+from .models import CustomUser, PasswordResetRequest
+from school.admin_actions import AdminActions
 
 # Custom UserAdmin with conditional logic for superusers and staff
 class CustomUserAdmin(DefaultUserAdmin):
@@ -29,6 +30,18 @@ class CustomUserAdmin(DefaultUserAdmin):
 
     # Filter users based on role and authorization
     list_filter = ('is_student', 'is_teacher', 'is_admin', 'is_authorized', 'is_staff', 'is_superuser')
+    
+    # Search fields
+    search_fields = ('username', 'email', 'first_name', 'last_name')
+    
+    # Actions
+    actions = [
+        'delete_selected',
+        AdminActions.make_authorized,
+        AdminActions.make_unauthorized,
+        AdminActions.promote_to_admin,
+        AdminActions.remove_admin_status,
+    ]
 
     # Customize queryset to separate superusers and staff in the admin list view
     def get_queryset(self, request):
@@ -39,3 +52,21 @@ class CustomUserAdmin(DefaultUserAdmin):
 
 # Register the CustomUser model with the custom admin
 admin.site.register(CustomUser, CustomUserAdmin)
+
+# Register PasswordResetRequest
+@admin.register(PasswordResetRequest)
+class PasswordResetRequestAdmin(admin.ModelAdmin):
+    list_display = ('user', 'email', 'created_at', 'is_valid')
+    search_fields = ('user__username', 'email')
+    list_filter = ('created_at',)
+    readonly_fields = ('token', 'created_at')
+    fieldsets = (
+        ('User Info', {'fields': ('user', 'email')}),
+        ('Token', {'fields': ('token', 'created_at')}),
+    )
+    actions = ['delete_selected']
+    
+    def is_valid(self, obj):
+        return obj.is_valid()
+    is_valid.boolean = True
+    is_valid.short_description = 'Token Valid'

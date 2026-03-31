@@ -1,0 +1,110 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% block body %}
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">Welcome {{ user.first_name }}!</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Admin Dashboard</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Profile Card -->
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        {% if student and student.student_image %}
+                            <img src="{{ student.student_image.url }}" alt="Student Image" class="rounded-circle mb-3" style="object-fit: cover; height: 120px; width: 120px;">
+                        {% elif teacher and teacher.teacher_image %}
+                            <img src="{{ teacher.teacher_image.url }}" alt="Teacher Image" class="rounded-circle mb-3" style="object-fit: cover; height: 120px; width: 120px;">
+                        {% else %}
+                            <img src="{% static 'assets/img/profiles/avatar-01.jpg' %}" alt="User Image" class="rounded-circle mb-3" style="height: 120px; width: 120px;">
+                        {% endif %}
+                        <h5>{{ user.first_name }} {{ user.last_name }}</h5>
+                        <p class="text-muted">Administrator</p>
+                        <a href="{% url 'profile' %}" class="btn btn-sm btn-primary">View Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <a href="{% url 'student_list' %}" class="btn btn-primary"><i class="fas fa-list"></i> View All Students</a>
+                        <a href="{% url 'teacher_list' %}" class="btn btn-info"><i class="fas fa-list"></i> View All Teachers</a>
+                        <a href="{% url 'department_list' %}" class="btn btn-warning"><i class="fas fa-list"></i> View All Departments</a>
+                        <a href="{% url 'subject_list' %}" class="btn btn-secondary"><i class="fas fa-list"></i> View All Subjects</a>
+                        <a href="{% url 'profile' %}" class="btn btn-success"><i class="fas fa-user-circle"></i> My Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+                <div class="card dash-widget">
+                    <div class="card-body">
+                        <span class="dash-widget-icon">
+                            <i class="fas fa-user-graduate"></i>
+                        </span>
+                        <div class="dash-widget-info">
+                            <h3>{{ total_students }}</h3>
+                            <span>Total Students</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+                <div class="card dash-widget">
+                    <div class="card-body">
+                        <span class="dash-widget-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </span>
+                        <div class="dash-widget-info">
+                            <h3>{{ total_teachers }}</h3>
+                            <span>Total Teachers</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+                <div class="card dash-widget">
+                    <div class="card-body">
+                        <span class="dash-widget-icon">
+                            <i class="fas fa-book"></i>
+                        </span>
+                        <div class="dash-widget-info">
+                            <h3>{{ total_classes }}</h3>
+                            <span>Total Classes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+                <div class="card dash-widget">
+                    <div class="card-body">
+                        <span class="dash-widget-icon">
+                            <i class="fas fa-building"></i>
+                        </span>
+                        <div class="dash-widget-info">
+                            <h3>{{ total_departments }}</h3>
+                            <span>Total Departments</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

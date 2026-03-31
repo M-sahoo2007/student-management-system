@@ -1,0 +1,365 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% block body %}
+
+
+<div class="page-wrapper">
+<div class="content container-fluid">
+
+<div class="page-header">
+<div class="row">
+<div class="col-sm-12">
+<h3 class="page-title">Welcome {{ user.first_name }}!</h3>
+<ul class="breadcrumb">
+<li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+<li class="breadcrumb-item active">Admin Dashboard</li>
+</ul>
+</div>
+</div>
+</div>
+
+<!-- Admin Profile Card -->
+<div class="row mb-3">
+<div class="col-md-3">
+<div class="card">
+<div class="card-body text-center">
+{% if student and student.student_image %}
+   <img src="{{ student.student_image.url }}" alt="Student Image" class="rounded-circle mb-3" style="object-fit: cover; height: 120px; width: 120px;">
+{% elif teacher and teacher.teacher_image %}
+   <img src="{{ teacher.teacher_image.url }}" alt="Teacher Image" class="rounded-circle mb-3" style="object-fit: cover; height: 120px; width: 120px;">
+{% else %}
+   <img src="{% static 'assets/img/profiles/avatar-01.jpg' %}" alt="User Image" class="rounded-circle mb-3" style="height: 120px; width: 120px;">
+{% endif %}
+<h5>{{ user.first_name }} {{ user.last_name }}</h5>
+<p class="text-muted">Administrator</p>
+<a href="{% url 'profile' %}" class="btn btn-sm btn-primary">View Profile</a>
+</div>
+</div>
+</div>
+</div>
+
+<div class="row mb-3">
+<div class="col-sm-12">
+<div class="card">
+<div class="card-body">
+<a href="{% url 'student_list' %}" class="btn btn-primary"><i class="fas fa-list"></i> View All Students</a>
+<a href="{% url 'teacher_list' %}" class="btn btn-info"><i class="fas fa-list"></i> View All Teachers</a>
+<a href="{% url 'department_list' %}" class="btn btn-warning"><i class="fas fa-list"></i> View All Departments</a>
+<a href="{% url 'subject_list' %}" class="btn btn-secondary"><i class="fas fa-list"></i> View All Subjects</a>
+<a href="{% url 'profile' %}" class="btn btn-success"><i class="fas fa-user-circle"></i> My Profile</a>
+</div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+<div class="card dash-widget">
+<div class="card-body">
+<span class="dash-widget-icon">
+<i class="fas fa-user-graduate"></i>
+</span>
+<div class="dash-widget-info">
+<h3>{{ total_students }}</h3>
+<span>Total Students</span>
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+<div class="card dash-widget">
+<div class="card-body">
+<span class="dash-widget-icon">
+<i class="fas fa-chalkboard-teacher"></i>
+</span>
+<div class="dash-widget-info">
+<h3>{{ total_teachers }}</h3>
+<span>Total Teachers</span>
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+<div class="card dash-widget">
+<div class="card-body">
+<span class="dash-widget-icon">
+<i class="fas fa-book"></i>
+</span>
+<div class="dash-widget-info">
+<h3>65</h3>
+<span>Total Classes</span>
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+<div class="card dash-widget">
+<div class="card-body">
+<span class="dash-widget-icon">
+<i class="fas fa-building"></i>
+</span>
+<div class="dash-widget-info">
+<h3>8</h3>
+<span>Departments</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+<div class="card card-table">
+<div class="card-header">
+<h4 class="card-title">Recent Activities</h4>
+</div>
+<div class="card-body">
+<div class="table-responsive">
+<table class="table table-hover table-center">
+<thead>
+<tr>
+<th>Activity</th>
+<th>User</th>
+<th>Date</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Student Added</td>
+<td>John Doe</td>
+<td>2024-03-30</td>
+<td><span class="badge badge-success">Success</span></td>
+<td>
+<a href="#" class="btn btn-sm btn-primary">View</a>
+</td>
+</tr>
+<tr>
+<td>Teacher Updated</td>
+<td>Jane Smith</td>
+<td>2024-03-29</td>
+<td><span class="badge badge-success">Success</span></td>
+<td>
+<a href="#" class="btn btn-sm btn-primary">View</a>
+</td>
+</tr>
+<tr>
+<td>Class Created</td>
+<td>Admin</td>
+<td>2024-03-28</td>
+<td><span class="badge badge-success">Success</span></td>
+<td>
+<a href="#" class="btn btn-sm btn-primary">View</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+<footer>
+<p>Copyright © 2024 School Management System.</p>
+</footer>
+
+</div>
+</div>
+
+
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+
+{% endblock %}
+<div class="card">
+<div class="card-body">
+<div class="row">
+<div class="col-md-12">
+<div class="about-info">
+<h4>About Me</h4>
+<div class="media mt-3">
+<img src="{{ teachers.teacher_image.url }}" class="mr-3" alt="...">
+<div class="media-body">
+<ul>
+<li>
+<span class="title-span">Full Name : </span>
+<span class="info-span">{{teacher.first_name}}</span>
+</li>
+<li>
+<span class="title-span">Department : </span>
+<span class="info-span">{{teacher.department}}/span>
+</li>
+<li>
+<span class="title-span">Mobile : </span>
+<span class="info-span">{{teacher.mobile_number}}</span>
+</li>
+<li>
+<span class="title-span">Email : </span>
+<span class="info-span"><a href="{{teacher.teacher_email}}" class="__cf_email__" data-cfemail="7216131b010b32151f131b1e5c111d1f">[email&#160;protected]</a></span>
+</li>
+<li>
+<span class="title-span">Gender : </span>
+<span class="info-span">{{teacher.gender}}</span>
+</li>
+<li>
+<span class="title-span">DOB : </span>
+<span class="info-span">{{teacher.date_of_birth }}</span>
+</li>
+</ul>
+</div>
+</div>
+<div class="row mt-3">
+<div class="col-md-12">
+<p>Hello I am Daisy Parks. Lorem Ipsum is simply dummy text of the printing and typesetting industry, simply dummy text of the printing and typesetting industry.</p>
+</div>
+</div>
+<div class="row follow-sec">
+<div class="col-md-4 mb-3">
+<div class="blue-box">
+<h3>2850</h3>
+<p>Followers</p>
+</div>
+</div>
+<div class="col-md-4 mb-3">
+<div class="blue-box">
+<h3>2050</h3>
+<p>Following</p>
+</div>
+</div>
+<div class="col-md-4 mb-3">
+<div class="blue-box">
+<h3>2950</h3>
+<p>Friends</p>
+</div>
+</div>
+</div>
+<div class="row mt-2">
+<div class="col-md-12">
+<h5>Permanent Address</h5>
+<p>480, Estern Avenue, Courtage area, New York</p>
+</div>
+</div>
+<div class="row mt-2">
+<div class="col-md-12">
+<h5>Present Address</h5>
+<p>480, Estern Avenue, Courtage area, New York</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="row mt-2">
+<div class="col-md-12">
+<div class="skill-info">
+<h4>Skills</h4>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry, simply dummy text of the printing and typesetting industry</p>
+<ul>
+<li>
+<label>Lorem Ipsum is simply</label>
+<div class="progress">
+<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%"></div>
+</div>
+</li>
+<li>
+<label>Lorem Ipsum is simply</label>
+<div class="progress">
+<div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" aria-valuenow="69" aria-valuemin="0" aria-valuemax="100" style="width: 69%"></div>
+</div>
+</li>
+<li>
+<label>Lorem Ipsum is simply</label>
+<div class="progress">
+<div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" aria-valuenow="86" aria-valuemin="0" aria-valuemax="100" style="width: 86%"></div>
+</div>
+</li>
+<li>
+ <label>Lorem Ipsum is simply</label>
+<div class="progress">
+<div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" style="width: 65%"></div>
+</div>
+</li>
+</ul>
+<div class="row mt-3">
+<div class="col-md-12">
+<h5>Education</h5>
+<p class="mt-3">Secondary Schooling at xyz school of secondary education, Mumbai.</p>
+<p>Higher Secondary Schooling at xyz school of higher secondary education, Mumbai.</p>
+<p>Bachelor of Science at Abc College of Art and Science, Chennai.</p>
+<p>Master of Science at Cdm College of Engineering and Technology, Pune.</p>
+</div>
+</div>
+<div class="row mt-3">
+<div class="col-md-12">
+<h5>Certificates</h5>
+<p class="mt-3">1st Prise in Running Competition.</p>
+<p>Lorem Ipsum is simply dummy text.</p>
+<p>Won overall star teacher in higher secondary education.</p>
+<p>Lorem Ipsum is simply dummy text.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="row mt-2">
+<div class="col-md-12">
+<div class="skill-info">
+<h4>Settings</h4>
+<form>
+<div class="row mt-3">
+<div class="col-12 col-sm-6">
+<div class="form-group">
+<label>Username</label>
+<input type="text" class="form-control">
+</div>
+</div>
+<div class="col-12 col-sm-6">
+<div class="form-group">
+<label>Current Password</label>
+<input type="password" class="form-control">
+</div>
+</div>
+<div class="col-12 col-sm-6">
+<div class="form-group">
+<label>New Password</label>
+<input type="password" class="form-control">
+</div>
+</div>
+<div class="col-12">
+<button type="submit" class="btn btn-primary">Submit</button>
+</div>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<footer>
+<p>Copyright © 2020 Dreamguys.</p>
+</footer>
+
+</div>
+
+</div>
+
+
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+
+<script src="{% static 'assets/js/script.js' %}"></script>
+
+{% endblock %}

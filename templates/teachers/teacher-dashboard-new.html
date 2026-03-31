@@ -1,0 +1,160 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% block body %}
+
+
+<div class="page-wrapper">
+<div class="content container-fluid">
+
+<div class="page-header">
+<div class="row">
+<div class="col-sm-12">
+<h3 class="page-title">Welcome Teacher!</h3>
+<ul class="breadcrumb">
+<li class="breadcrumb-item"><a href="{% url 'teacher_dashboard' %}">Dashboard</a></li>
+<li class="breadcrumb-item active">Teacher Dashboard</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+<div class="card dash-widget">
+<div class="card-body">
+<span class="dash-widget-icon">
+<i class="fas fa-user-graduate"></i>
+</span>
+<div class="dash-widget-info">
+<h3>1350</h3>
+<span>Students</span>
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+<div class="card dash-widget">
+<div class="card-body">
+<span class="dash-widget-icon">
+<i class="fas fa-book"></i>
+</span>
+<div class="dash-widget-info">
+<h3>250</h3>
+<span>Classes</span>
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+<div class="card dash-widget">
+<div class="card-body">
+<span class="dash-widget-icon">
+<i class="fas fa-award"></i>
+</span>
+<div class="dash-widget-info">
+<h3>45</h3>
+<span>Subjects</span>
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+<div class="card dash-widget">
+<div class="card-body">
+<span class="dash-widget-icon">
+<i class="fas fa-calendar-alt"></i>
+</span>
+<div class="dash-widget-info">
+<h3>120</h3>
+<span>Working Days</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+<div class="card card-table">
+<div class="card-header">
+<h4 class="card-title">Recent Classes</h4>
+</div>
+<div class="card-body">
+<div class="table-responsive">
+<table class="table table-hover table-center">
+<thead>
+<tr>
+<th>Class Name</th>
+<th>Class Section</th>
+<th>Students</th>
+<th>Schedule</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<h2 class="table-avatar">
+<a href="#">Science - Class 10</a>
+</h2>
+</td>
+<td>A</td>
+<td>45</td>
+<td>Mon - Fri</td>
+<td>
+<a href="#" class="btn btn-sm btn-primary">View</a>
+</td>
+</tr>
+<tr>
+<td>
+<h2 class="table-avatar">
+<a href="#">Math - Class 9</a>
+</h2>
+</td>
+<td>B</td>
+<td>42</td>
+<td>Mon - Fri</td>
+<td>
+<a href="#" class="btn btn-sm btn-primary">View</a>
+</td>
+</tr>
+<tr>
+<td>
+<h2 class="table-avatar">
+<a href="#">English - Class 10</a>
+</h2>
+</td>
+<td>A</td>
+<td>48</td>
+<td>Mon - Fri</td>
+<td>
+<a href="#" class="btn btn-sm btn-primary">View</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+<footer>
+<p>Copyright © 2024 School Management System.</p>
+</footer>
+
+</div>
+</div>
+
+
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+
+{% endblock %}

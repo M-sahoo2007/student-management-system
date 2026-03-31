@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.crypto import get_random_string
+from school.utils import create_notification
 
 
 def signup_view(request):
@@ -36,6 +37,8 @@ def signup_view(request):
         user.save()  # Save the user with the assigned role
         login(request, user)
         messages.success(request, 'Signup successful!')
+        # Create notification
+        create_notification(user, f"Welcome {user.first_name}! You have successfully signed up.")
         return redirect('index')  # Redirect to the index or home page
     return render(request, 'authentication/register.html')  # Render signup template
 
@@ -49,6 +52,8 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, 'Login successful!')
+            # Create notification
+            create_notification(user, f"You have logged in successfully.")
             
             # Redirect user based on their role
             if user.is_admin:

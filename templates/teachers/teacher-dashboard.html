@@ -1,0 +1,172 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% block body %}
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">Welcome {{ user.first_name }}!</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'teacher_dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Teacher Dashboard</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teacher Profile Card -->
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        {% if teacher and teacher.teacher_image %}
+                            <img src="{{ teacher.teacher_image.url }}" alt="Teacher Image" class="rounded-circle mb-3" style="object-fit: cover; height: 120px; width: 120px;">
+                        {% else %}
+                            <img src="{% static 'assets/img/profiles/avatar-01.jpg' %}" alt="User Image" class="rounded-circle mb-3" style="height: 120px; width: 120px;">
+                        {% endif %}
+                        <h5>{{ user.first_name }} {{ user.last_name }}</h5>
+                        <p class="text-muted">Teacher ID: {{ teacher.teacher_id }}</p>
+                        <a href="{% url 'profile' %}" class="btn btn-sm btn-primary">View Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <a href="{% url 'teacher_list' %}" class="btn btn-primary"><i class="fas fa-list"></i> View All Teachers</a>
+                        <a href="{% url 'add_teacher' %}" class="btn btn-success"><i class="fas fa-plus"></i> Add New Teacher</a>
+                        <a href="{% url 'profile' %}" class="btn btn-info"><i class="fas fa-user-circle"></i> My Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+                <div class="card dash-widget">
+                    <div class="card-body">
+                        <span class="dash-widget-icon">
+                            <i class="fas fa-user-graduate"></i>
+                        </span>
+                        <div class="dash-widget-info">
+                            <h3>{{ total_students }}</h3>
+                            <span>Students</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+                <div class="card dash-widget">
+                    <div class="card-body">
+                        <span class="dash-widget-icon">
+                            <i class="fas fa-book"></i>
+                        </span>
+                        <div class="dash-widget-info">
+                            <h3>{{ total_classes }}</h3>
+                            <span>Classes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+                <div class="card dash-widget">
+                    <div class="card-body">
+                        <span class="dash-widget-icon">
+                            <i class="fas fa-award"></i>
+                        </span>
+                        <div class="dash-widget-info">
+                            <h3>{{ total_subjects }}</h3>
+                            <span>Subjects</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+                <div class="card dash-widget">
+                    <div class="card-body">
+                        <span class="dash-widget-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </span>
+                        <div class="dash-widget-info">
+                            <h3>{{ total_teachers }}</h3>
+                            <span>Teachers</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-table">
+                    <div class="card-header">
+                        <h4 class="card-title">Recent Classes</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-center">
+                                <thead>
+                                    <tr>
+                                        <th>Class Name</th>
+                                        <th>Class Section</th>
+                                        <th>Students</th>
+                                        <th>Schedule</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <h2 class="table-avatar">
+                                                <a href="#">Science - Class 10</a>
+                                            </h2>
+                                        </td>
+                                        <td>A</td>
+                                        <td>45</td>
+                                        <td>Mon - Fri</td>
+                                        <td>
+                                            <a href="#" class="btn btn-sm btn-primary">View</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h2 class="table-avatar">
+                                                <a href="#">Math - Class 9</a>
+                                            </h2>
+                                        </td>
+                                        <td>B</td>
+                                        <td>42</td>
+                                        <td>Mon - Fri</td>
+                                        <td>
+                                            <a href="#" class="btn btn-sm btn-primary">View</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h2 class="table-avatar">
+                                                <a href="#">English - Class 10</a>
+                                            </h2>
+                                        </td>
+                                        <td>A</td>
+                                        <td>48</td>
+                                        <td>Mon - Fri</td>
+                                        <td>
+                                            <a href="#" class="btn btn-sm btn-primary">View</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

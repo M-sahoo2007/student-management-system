@@ -1,0 +1,252 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">My Profile</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">My Profile</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="row">
+            <!-- Profile Card -->
+            <div class="col-lg-4 col-md-5">
+                <div class="card">
+                    <div class="card-body profile-card pt-0 text-center">
+                        <!-- Profile Image -->
+                        <div class="profile-image mb-3">
+                            {% if student and student.student_image %}
+                                <img src="{{ student.student_image.url }}" alt="Profile" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #007bff;">
+                            {% elif teacher and teacher.teacher_image %}
+                                <img src="{{ teacher.teacher_image.url }}" alt="Profile" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #007bff;">
+                            {% else %}
+                                <div class="rounded-circle" style="width: 150px; height: 150px; background: #e9ecef; display: flex; align-items: center; justify-content: center; margin: 0 auto; border: 4px solid #007bff;">
+                                    <i class="fas fa-user" style="font-size: 60px; color: #6c757d;"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- User Name -->
+                        <h3 class="mb-1">{{ user.first_name }} {{ user.last_name }}</h3>
+                        
+                        <!-- User Role -->
+                        <div class="text-muted mb-3">
+                            {% if user.is_admin %}
+                                <span class="badge badge-primary">Administrator</span>
+                            {% endif %}
+                            {% if user.is_teacher %}
+                                <span class="badge badge-info">Teacher</span>
+                            {% endif %}
+                            {% if user.is_student %}
+                                <span class="badge badge-success">Student</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- User Email -->
+                        <p class="text-muted mb-1">
+                            <i class="fas fa-envelope"></i> {{ user.email }}
+                        </p>
+
+                        <!-- Join Date -->
+                        <p class="text-muted mb-3">
+                            <i class="fas fa-calendar"></i> Joined {{ user.date_joined|date:"F j, Y" }}
+                        </p>
+
+                        <!-- Edit Profile Button -->
+                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editProfileModal">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Account Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <small class="text-muted d-block mb-2">Verified</small>
+                                <h5>{{ user.is_authorized|yesno:"Yes,No" }}</h5>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted d-block mb-2">Active</small>
+                                <h5>{{ user.is_active|yesno:"Yes,No" }}</h5>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted d-block mb-2">Staff</small>
+                                <h5>{{ user.is_staff|yesno:"Yes,No" }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Details -->
+            <div class="col-lg-8 col-md-7">
+                <!-- User Information Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">User Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">First Name</small>
+                                <h6>{{ user.first_name|default:"Not provided" }}</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Last Name</small>
+                                <h6>{{ user.last_name|default:"Not provided" }}</h6>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Email</small>
+                                <h6>{{ user.email }}</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Username</small>
+                                <h6>{{ user.username }}</h6>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <small class="text-muted d-block mb-2">Account Created</small>
+                                <h6>{{ user.date_joined|date:"F j, Y \a\t g:i A" }}</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Student Information Card -->
+                {% if student %}
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Student Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Student ID</small>
+                                <h6>{{ student.student_id }}</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Class</small>
+                                <h6>{{ student.student_class }}</h6>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Gender</small>
+                                <h6>{{ student.gender }}</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Date of Birth</small>
+                                <h6>{{ student.date_of_birth|date:"F j, Y" }}</h6>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Mobile Number</small>
+                                <h6>{{ student.mobile_number }}</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Joining Date</small>
+                                <h6>{{ student.joining_date|date:"F j, Y" }}</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Teacher Information Card -->
+                {% if teacher %}
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Teacher Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Teacher ID</small>
+                                <h6>{{ teacher.teacher_id }}</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Department</small>
+                                <h6>{{ teacher.teacher_department }}</h6>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Gender</small>
+                                <h6>{{ teacher.gender }}</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Date of Birth</small>
+                                <h6>{{ teacher.date_of_birth|date:"F j, Y" }}</h6>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Email</small>
+                                <h6>{{ teacher.teacher_email }}</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Mobile Number</small>
+                                <h6>{{ teacher.mobile_number }}</h6>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Joining Date</small>
+                                <h6>{{ teacher.joining_date|date:"F j, Y" }}</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Religion</small>
+                                <h6>{{ teacher.religion }}</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Profile</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p class="text-muted">Profile editing functionality will be available soon.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
