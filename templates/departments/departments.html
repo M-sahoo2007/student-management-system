@@ -22,7 +22,9 @@
 <div class="card">
 <div class="card-header">
 <h4 class="card-title">Department List 
+{% if not request.user.is_student %}
 <a href="{% url 'add_department' %}" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Add Department</a>
+{% endif %}
 </h4>
 </div>
 <div class="card-body">
@@ -30,6 +32,7 @@
 <table class="table table-hover table-center">
 <thead>
 <tr>
+<th>Logo</th>
 <th>Department Name</th>
 <th>Department ID</th>
 <th>Email</th>
@@ -41,6 +44,13 @@
 {% for department in department_list %}
 <tr>
 <td>
+{% if department.department_image %}
+<a href="#" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src="{{ department.department_image.url }}" alt="{{ department.department_name }}" title="{{ department.department_name }}"></a>
+{% else %}
+<div style="height: 32px; width: 32px; background-color: #e9ecef; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-weight: 500; margin-right: 0.5rem;">No Logo</div>
+{% endif %}
+</td>
+<td>
 <h2 class="table-avatar">
 <a href="#">{{ department.department_name }}</a>
 </h2>
@@ -49,13 +59,19 @@
 <td>{{ department.department_email|default:"N/A" }}</td>
 <td>{{ department.mobile_number|default:"N/A" }}</td>
 <td class="text-right">
+{% if not request.user.is_student %}
 <a href="{% url 'edit_department' department.slug %}" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Edit</a>
+{% if request.user.is_admin %}
 <a href="{% url 'delete_department' department.slug %}" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Delete</a>
+{% endif %}
+{% else %}
+<span class="text-muted">No actions available</span>
+{% endif %}
 </td>
 </tr>
 {% empty %}
 <tr>
-<td colspan="5" class="text-center">No departments found</td>
+<td colspan="6" class="text-center">No departments found</td>
 </tr>
 {% endfor %}
 </tbody>

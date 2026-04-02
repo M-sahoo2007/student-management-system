@@ -9,6 +9,10 @@ from student.models import Student
 # Create your views here.
 
 def add_teacher(request):
+    # Restrict access for students
+    if request.user.is_authenticated and request.user.is_student:
+        return HttpResponseForbidden("Students are not allowed to add teachers.")
+    
     if request.method == "POST":
         first_name = request.POST.get("first_name")
         last_name = request.POST.get("last_name")
@@ -81,6 +85,10 @@ def teacher_list(request):
 
 
 def edit_teacher(request, slug):
+    # Restrict access for students
+    if request.user.is_authenticated and request.user.is_student:
+        return HttpResponseForbidden("Students are not allowed to edit teachers.")
+    
     teacher = get_object_or_404(Teacher, slug=slug)
     parent = teacher.parent if hasattr(teacher, 'parent') else None
     if request.method == "POST":
@@ -141,6 +149,10 @@ def view_teacher(request, slug):
 
 
 def delete_teacher(request, slug):
+    # Restrict access for students
+    if request.user.is_authenticated and request.user.is_student:
+        return HttpResponseForbidden("Students are not allowed to delete teachers.")
+    
     if request.method == "POST":
         teacher = get_object_or_404(Teacher, slug = slug)
         teacher_name = f"{teacher.first_name} {teacher.last_name}"

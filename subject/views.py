@@ -4,9 +4,17 @@ from .models import *
 from django.contrib import messages
 from school.utils import create_notification
 
+# Helper function to check if user is a student
+def is_student(user):
+    return user.is_authenticated and user.is_student
+
 # Create your views here.
 
 def add_subject(request):
+    # Prevent students from adding subjects
+    if is_student(request.user):
+        messages.error(request, "Students do not have permission to add subjects.")
+        return redirect("subject_list")
     if request.method == "POST":
         subject_name = request.POST.get("subject_name")
         subject_id = request.POST.get("subject_id")
@@ -27,7 +35,7 @@ def add_subject(request):
             subject_name=subject_name,
             subject_id=subject_id,
             subject_image=subject_image,
-            
+            department=department,
         )
         messages.success(request, "Subject added successfully!")
         # Create notification
@@ -48,6 +56,10 @@ def subject_list(request):
 
 
 def edit_subject(request, slug):
+    # Prevent students from editing subjects
+    if is_student(request.user):
+        messages.error(request, "Students do not have permission to edit subjects.")
+        return redirect("subject_list")
     subject = get_object_or_404(Subject, slug=slug)
     department = subject.department if hasattr(subject, 'department') else None
     if request.method == "POST":
@@ -83,8 +95,11 @@ def view_subject(request, slug):
     return render(request, "subjects/subject-details.html", context)
 
 
-
 def delete_subject(request, slug):
+    # Prevent students from deleting subjects
+    if is_student(request.user):
+        messages.error(request, "Students do not have permission to delete subjects.")
+        return redirect("subject_list")
     if request.method == "POST":
         subject = get_object_or_404(Subject, slug = slug)
         subject_name = f"{subject.subject_name}"

@@ -2,6 +2,19 @@
 {% load static %}
 {% block body %}
 
+{% if request.user.is_student or request.user.is_teacher %}
+<div class="page-wrapper">
+<div class="content container-fluid">
+<div class="alert alert-danger" role="alert">
+<h4 class="alert-heading">Access Denied</h4>
+<p>You do not have permission to add departments. Only administrators can perform this action.</p>
+<hr>
+<a href="{% url 'department_list' %}" class="btn btn-primary">Back to Departments</a>
+</div>
+</div>
+</div>
+{% else %}
+
 <div class="page-wrapper">
 <div class="content container-fluid">
 
@@ -21,7 +34,7 @@
 <div class="col-sm-12">
 <div class="card">
 <div class="card-body">
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
 {% csrf_token %}
 <div class="row">
 <div class="col-12">
@@ -104,6 +117,8 @@
 
 </div>
 </div>
+
+{% endif %}
 
 <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
 <script src="{% static 'assets/js/popper.min.js' %}"></script>

@@ -4,9 +4,28 @@ from .models import *
 from django.contrib import messages
 from school.utils import create_notification
 
+# Helper function to check if user is a student
+def is_student(user):
+    return user.is_authenticated and user.is_student
+
+# Helper function to check if user is a teacher
+def is_teacher(user):
+    return user.is_authenticated and user.is_teacher
+
+# Helper function to check if user can edit/delete departments (only admins)
+def can_manage_departments(user):
+    return user.is_authenticated and user.is_admin and not user.is_student and not user.is_teacher
+
 # Create your views here.
 
 def add_department(request):
+    # Prevent students and teachers from adding departments
+    if is_student(request.user):
+        messages.error(request, "Students do not have permission to add departments.")
+        return redirect("department_list")
+    if is_teacher(request.user):
+        messages.error(request, "Teachers do not have permission to add departments.")
+        return redirect("department_list")
     if request.method == "POST":
         department_name = request.POST.get("department_name")
         department_id = request.POST.get("department_id")
@@ -53,6 +72,11 @@ def department_list(request):
 
 
 def edit_department(request, slug):
+    # Prevent students from editing departments
+    if is_student(request.user):
+        messages.error(request, "Students do not have permission to edit departments.")
+        return redirect("department_list")
+    
     department = get_object_or_404(Department, slug=slug)
     hod = department.hod if hasattr(department, 'hod') else None
     if request.method == "POST":
@@ -95,6 +119,11 @@ def view_department(request, slug):
 
 
 def delete_department(request, slug):
+    # Prevent students and teachers from deleting departments (only admins)
+    if not request.user.is_admin or is_student(request.user) or is_teacher(request.user):
+        messages.error(request, "Only administrators can delete departments.")
+        return redirect("department_list")
+    
     if request.method == "POST":
         department = get_object_or_404(Department, slug = slug)
         department_name = f"{department.department_name}"

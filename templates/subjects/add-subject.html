@@ -1,6 +1,20 @@
 {% extends 'Home/base.html' %}
 {% load static %}
 {% block body %}
+
+{% if request.user.is_student %}
+<div class="page-wrapper">
+<div class="content container-fluid">
+<div class="alert alert-danger" role="alert">
+<h4 class="alert-heading">Access Denied</h4>
+<p>You do not have permission to add subjects. Only administrators and teachers can perform this action.</p>
+<hr>
+<a href="{% url 'subject_list' %}" class="btn btn-primary">Back to Subjects</a>
+</div>
+</div>
+</div>
+{% else %}
+
          <div class="page-wrapper">
             <div class="content container-fluid">
                <div class="page-header">
@@ -89,5 +103,7 @@
    </body>
    <!-- Mirrored from preschool.dreamguystech.com/html-template/add-subject.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 28 Oct 2021 11:11:50 GMT -->
 </html>
+
+{% endif %}
 
 {% endblock %}
