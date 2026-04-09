@@ -40,6 +40,7 @@
                     <div class="card-body">
                         <a href="{% url 'teacher_list' %}" class="btn btn-primary"><i class="fas fa-list"></i> View All Teachers</a>
                         <a href="{% url 'add_teacher' %}" class="btn btn-success"><i class="fas fa-plus"></i> Add New Teacher</a>
+                        <a href="{% url 'add_assignment' %}" class="btn btn-warning text-white"><i class="fas fa-tasks"></i> Add Task/Assignment</a>
                         <a href="{% url 'profile' %}" class="btn btn-info"><i class="fas fa-user-circle"></i> My Profile</a>
                     </div>
                 </div>
@@ -102,7 +103,7 @@
         </div>
 
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="card card-table">
                     <div class="card-header">
                         <h4 class="card-title">Recent Classes</h4>
@@ -120,45 +121,157 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    {% for cls in recent_classes %}
                                     <tr>
                                         <td>
                                             <h2 class="table-avatar">
-                                                <a href="#">Science - Class 10</a>
+                                                <a href="#">{{ cls.student_class }}</a>
                                             </h2>
                                         </td>
-                                        <td>A</td>
-                                        <td>45</td>
+                                        <td>{{ cls.section }}</td>
+                                        <td>{{ cls.student_count }}</td>
                                         <td>Mon - Fri</td>
                                         <td>
                                             <a href="#" class="btn btn-sm btn-primary">View</a>
                                         </td>
                                     </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">No recent classes available.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card card-table">
+                    <div class="card-header">
+                        <h4 class="card-title">Recent Tasks/Assignments</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-center">
+                                <thead>
+                                    <tr>
+                                        <th>Task Title</th>
+                                        <th>Class & Section</th>
+                                        <th>Due Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for assignment in recent_assignments %}
+                                    <tr>
+                                        <td><strong>{{ assignment.title }}</strong></td>
+                                        <td><span class="badge badge-info">{{ assignment.student_class }} - Sec {{ assignment.section }}</span></td>
+                                        <td>{{ assignment.due_date|date:"M d, Y" }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-4">No tasks assigned yet.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-table">
+                    <div class="card-header">
+                        <h4 class="card-title">Pending Student Submissions</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-center">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Assignment</th>
+                                        <th>Class & Section</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for submission in pending_submissions %}
                                     <tr>
                                         <td>
                                             <h2 class="table-avatar">
-                                                <a href="#">Math - Class 9</a>
+                                                <a href="#">{{ submission.student.first_name }} {{ submission.student.last_name }}</a>
                                             </h2>
                                         </td>
-                                        <td>B</td>
-                                        <td>42</td>
-                                        <td>Mon - Fri</td>
+                                        <td>{{ submission.assignment.title }}</td>
+                                        <td>{{ submission.assignment.student_class }} - Sec {{ submission.assignment.section }}</td>
                                         <td>
-                                            <a href="#" class="btn btn-sm btn-primary">View</a>
+                                            <span class="badge badge-warning">{{ submission.status }}</span>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'mark_submission_completed' submission.id %}" class="btn btn-sm btn-success"><i class="fas fa-check"></i> Mark Finished</a>
                                         </td>
                                     </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">No pending submissions.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-table">
+                    <div class="card-header">
+                        <h4 class="card-title">Recent Lesson History</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-center">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Lesson Title</th>
+                                        <th>Date & Time</th>
+                                        <th>Duration</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for history in learning_history %}
                                     <tr>
                                         <td>
                                             <h2 class="table-avatar">
-                                                <a href="#">English - Class 10</a>
+                                                <a href="#">{{ history.student.first_name }} {{ history.student.last_name }}</a>
                                             </h2>
                                         </td>
-                                        <td>A</td>
-                                        <td>48</td>
-                                        <td>Mon - Fri</td>
+                                        <td>{{ history.title }}</td>
+                                        <td>{{ history.start_datetime|date:"M d, Y" }} <span class="text-muted">{{ history.start_datetime|time:"g:i a" }}</span></td>
+                                        <td>{{ history.duration_minutes }} min</td>
                                         <td>
-                                            <a href="#" class="btn btn-sm btn-primary">View</a>
+                                            {% if history.status == 'In Progress' %}
+                                                <span class="badge badge-info">{{ history.status }}</span>
+                                            {% else %}
+                                                <span class="badge badge-success">{{ history.status }}</span>
+                                            {% endif %}
                                         </td>
                                     </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">No lesson history available.</td>
+                                    </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>

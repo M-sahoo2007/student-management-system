@@ -47,9 +47,17 @@ def login_view(request):
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
+        role = request.POST.get('role')
         
         user = authenticate(request, username=email, password=password)
         if user is not None:
+            # Check if the user's role matches the selected role
+            if not ((role == 'admin' and user.is_admin) or 
+                    (role == 'teacher' and user.is_teacher) or 
+                    (role == 'student' and user.is_student)):
+                messages.error(request, 'Invalid role selected for this user')
+                return redirect('login')
+            
             login(request, user)
             messages.success(request, 'Login successful!')
             # Create notification

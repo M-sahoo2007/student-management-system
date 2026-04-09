@@ -56,8 +56,7 @@ def add_department(request):
         messages.success(request, "Department added successfully!")
         # Create notification
         create_notification(request.user, f"Added Department: {department_name}")
-        # return render(request, "department_list")
-        # Process the form data as needed   
+        return redirect("department_list")
     return render(request, "departments/add-department.html")
 
 

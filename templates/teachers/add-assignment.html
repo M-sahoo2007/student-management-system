@@ -1,0 +1,83 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% block body %}
+<div class="page-wrapper">
+<div class="content container-fluid">
+
+<div class="page-header">
+<div class="row">
+<div class="col-sm-12">
+<h3 class="page-title">Add Assignment / Task</h3>
+<ul class="breadcrumb">
+<li class="breadcrumb-item"><a href="{% url 'teacher_dashboard' %}">Dashboard</a></li>
+<li class="breadcrumb-item active">Add Assignment</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-sm-12">
+<div class="card">
+<div class="card-body">
+<form method="POST">
+{% csrf_token %}
+<div class="row">
+<div class="col-12">
+<h5 class="form-title"><span>Assignment Details</span></h5>
+</div>
+<div class="col-12 col-sm-6">
+<div class="form-group">
+<label>Title <span class="text-danger">*</span></label>
+<input type="text" class="form-control" name="title" required>
+</div>
+</div>
+<div class="col-12 col-sm-6">
+<div class="form-group">
+<label>Total Points <span class="text-danger">*</span></label>
+<input type="number" class="form-control" name="total_points" value="100" required>
+</div>
+</div>
+<div class="col-12 col-sm-6">
+<div class="form-group">
+<label>Class <span class="text-danger">*</span></label>
+<input type="text" class="form-control" name="student_class" placeholder="e.g. Class 10" required>
+</div>
+</div>
+<div class="col-12 col-sm-6">
+<div class="form-group">
+<label>Section <span class="text-danger">*</span></label>
+<input type="text" class="form-control" name="section" placeholder="e.g. A" required>
+</div>
+</div>
+<div class="col-12 col-sm-6">
+<div class="form-group">
+<label>Due Date <span class="text-danger">*</span></label>
+<input type="date" class="form-control" name="due_date" required>
+</div>
+</div>
+<div class="col-12 col-sm-6">
+<div class="form-group">
+<label>Due Time <span class="text-danger">*</span></label>
+<input type="time" class="form-control" name="due_time" required>
+</div>
+</div>
+<div class="col-12">
+<div class="form-group">
+<label>Description</label>
+<textarea class="form-control" name="description" rows="4"></textarea>
+</div>
+</div>
+<div class="col-12">
+<button type="submit" class="btn btn-primary">Add Assignment</button>
+<a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">Cancel</a>
+</div>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

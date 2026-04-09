@@ -2,6 +2,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import Notification
 from student.models import Student
 from teacher.models import Teacher
@@ -31,6 +32,40 @@ def profile(request):
         except Teacher.DoesNotExist:
             pass
     
+    if request.method == 'POST':
+        # Update base user fields
+        user.first_name = request.POST.get('first_name', user.first_name)
+        user.last_name = request.POST.get('last_name', user.last_name)
+        user.email = request.POST.get('email', user.email)
+        user.save()
+        
+        mobile_number = request.POST.get('mobile_number')
+        profile_image = request.FILES.get('profile_image')
+        
+        # Update student record if the user is a student
+        if student:
+            student.first_name = user.first_name
+            student.last_name = user.last_name
+            if mobile_number:
+                student.mobile_number = mobile_number
+            if profile_image:
+                student.student_image = profile_image
+            student.save()
+            
+        # Update teacher record if the user is a teacher
+        if teacher:
+            teacher.first_name = user.first_name
+            teacher.last_name = user.last_name
+            teacher.teacher_email = user.email
+            if mobile_number:
+                teacher.mobile_number = mobile_number
+            if profile_image:
+                teacher.teacher_image = profile_image
+            teacher.save()
+            
+        messages.success(request, 'Your profile has been updated successfully!')
+        return redirect('profile')
+
     context = {
         'user': user,
         'student': student,

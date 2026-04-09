@@ -15,7 +15,9 @@
                      </div>
                      <div class="col-auto text-right float-right ml-auto">
                         <a href="#" class="btn btn-outline-primary mr-2"><i class="fas fa-download"></i> Download</a>
+                        {% if not request.user.is_student %}
                         <a href="{% url 'add_student' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
+                        {% endif %}
                      </div>
                   </div>
                </div>
@@ -31,10 +33,12 @@
                                        <th>Name</th>
                                        <th>Class</th>
                                        <th>DOB</th>
+                                       {% if not request.user.is_student %}
                                        <th>Parent Name</th>
                                        <th>Mobile Number</th>
                                        <th>Address</th>
                                        <th class="text-right">Action</th>
+                                       {% endif %}
                                     </tr>
                                  </thead>
                                  <tbody>
@@ -49,6 +53,7 @@
                                        </td>
                                        <td>{{ student.student_class }}</td>
                                        <td>{{ student.date_of_birth|date:"d M Y" }}</td>
+                                       {% if not request.user.is_student %}
                                        <td>{{ student.parent.father_name }} / {{ student.parent.mother_name }}</td>
                                        <td>{{ student.mobile_number }}</td>
                                        <td>{{ student.parent.present_address }}</td>
@@ -65,6 +70,7 @@
                                              </form>
                                          </div>
                                        </td>
+                                       {% endif %}
                                     </tr>
                                     {% endfor %}
                                  </tbody>

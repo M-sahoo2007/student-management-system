@@ -1,18 +1,22 @@
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Count
 from .models import *
 from django.contrib import messages
 from school.models import Notification
 from school.utils import create_notification
-from student.models import Student
+from student.models import Student, Assignment, StudentAssignment, LearningHistory
 
 # Create your views here.
+def can_manage_teachers(user):
+    """Helper to check if the user has administrative privileges to manage teachers."""
+    return user.is_authenticated and getattr(user, 'is_admin', False) and not user.is_student and not user.is_teacher
 
 def add_teacher(request):
-    # Restrict access for students
-    if request.user.is_authenticated and request.user.is_student:
-        return HttpResponseForbidden("Students are not allowed to add teachers.")
-    
+    if not can_manage_teachers(request.user):
+        messages.error(request, "You do not have permission to add teachers.")
+        return redirect("teacher_list")
+
     if request.method == "POST":
         first_name = request.POST.get("first_name")
         last_name = request.POST.get("last_name")
@@ -69,15 +73,15 @@ def add_teacher(request):
         messages.success(request, "Teacher added successfully!")
         # Create notification
         create_notification(request.user, f"Added Teacher: {first_name} {last_name}")
-        # return render(request, "teacher_list")
-        # Process the form data as needed   
+        return redirect("teacher_list")
     return render(request, "teachers/add-teacher.html")
 
 
 def teacher_list(request):
     teacher_list = Teacher.objects.select_related('parent').all()
     context = {
-        'teacher_list': teacher_list
+        'teacher_list': teacher_list,
+        'can_manage_teachers': can_manage_teachers(request.user)
     }
     return render(request, "teachers/teachers.html", context)
 
@@ -85,10 +89,10 @@ def teacher_list(request):
 
 
 def edit_teacher(request, slug):
-    # Restrict access for students
-    if request.user.is_authenticated and request.user.is_student:
-        return HttpResponseForbidden("Students are not allowed to edit teachers.")
-    
+    if not can_manage_teachers(request.user):
+        messages.error(request, "You do not have permission to edit teachers.")
+        return redirect("teacher_list")
+
     teacher = get_object_or_404(Teacher, slug=slug)
     parent = teacher.parent if hasattr(teacher, 'parent') else None
     if request.method == "POST":
@@ -142,17 +146,18 @@ def teacher_details(request):
 def view_teacher(request, slug):
     teacher = get_object_or_404(Teacher, teacher_id = slug)
     context ={
-        'teacher': teacher
+        'teacher': teacher,
+        'can_manage_teachers': can_manage_teachers(request.user)
     }
     return render(request, "teachers/teacher-details.html", context)
 
 
 
 def delete_teacher(request, slug):
-    # Restrict access for students
-    if request.user.is_authenticated and request.user.is_student:
-        return HttpResponseForbidden("Students are not allowed to delete teachers.")
-    
+    if not can_manage_teachers(request.user):
+        messages.error(request, "You do not have permission to delete teachers.")
+        return redirect("teacher_list")
+
     if request.method == "POST":
         teacher = get_object_or_404(Teacher, slug = slug)
         teacher_name = f"{teacher.first_name} {teacher.last_name}"
@@ -181,6 +186,20 @@ def teacher_dashboard(request):
     total_teachers = Teacher.objects.count()
     total_classes = len(set(Student.objects.values_list('student_class', flat=True)))
     total_subjects = 0  # Can be updated if Subject model exists
+    recent_classes = (
+        Student.objects.values('student_class', 'section')
+        .annotate(student_count=Count('id'))
+        .order_by('-student_count')[:5]
+    )
+    
+    # Fetch recent assignments created by teachers
+    recent_assignments = Assignment.objects.all().order_by('-created_at')[:5]
+    
+    # Fetch pending student submissions
+    pending_submissions = StudentAssignment.objects.exclude(status='Completed').order_by('assignment__due_date')[:10]
+    
+    # Fetch recent learning/lesson history
+    learning_history = LearningHistory.objects.all().order_by('-start_datetime')[:5]
     
     unread_notification = Notification.objects.filter(user=request.user, is_read=False)
     context = {
@@ -189,8 +208,53 @@ def teacher_dashboard(request):
         'total_teachers': total_teachers,
         'total_classes': total_classes,
         'total_subjects': total_subjects,
+        'recent_classes': recent_classes,
+        'recent_assignments': recent_assignments,
+        'pending_submissions': pending_submissions,
+        'learning_history': learning_history,
         'unread_notification': unread_notification,
         'unread_notification_count': unread_notification.count()
     }
     return render(request, "teachers/teacher-dashboard.html", context)
+
+def add_assignment(request):
+    if not request.user.is_authenticated or request.user.is_student:
+        return HttpResponseForbidden("Only teachers and admins can add assignments.")
+    
+    if request.method == "POST":
+        title = request.POST.get("title")
+        description = request.POST.get("description")
+        student_class = request.POST.get("student_class")
+        section = request.POST.get("section")
+        due_date = request.POST.get("due_date")
+        due_time = request.POST.get("due_time")
+        total_points = request.POST.get("total_points") or 100
+        
+        Assignment.objects.create(
+            title=title,
+            description=description,
+            student_class=student_class,
+            section=section,
+            due_date=due_date,
+            due_time=due_time,
+            created_by=request.user.get_full_name() or request.user.username,
+            total_points=total_points
+        )
+        messages.success(request, "Assignment added successfully!")
+        create_notification(request.user, f"Added Assignment: {title} for {student_class}-{section}")
+        return redirect("teacher_dashboard")
+        
+    return render(request, "teachers/add-assignment.html")
+
+def mark_submission_completed(request, submission_id):
+    if not request.user.is_authenticated or request.user.is_student:
+        return HttpResponseForbidden("Only teachers can mark assignments as completed.")
+    
+    submission = get_object_or_404(StudentAssignment, id=submission_id)
+    submission.status = 'Completed'
+    submission.score = submission.assignment.total_points  # Give full points
+    submission.save()
+    messages.success(request, f"Assignment '{submission.assignment.title}' for {submission.student.first_name} marked as completed!")
+    create_notification(request.user, f"Marked assignment '{submission.assignment.title}' as completed for {submission.student.first_name}")
+    return redirect('teacher_dashboard')
     

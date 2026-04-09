@@ -42,7 +42,7 @@
 <div class="card">
 <div class="card-body">
 <a href="{% url 'student_list' %}" class="btn btn-primary"><i class="fas fa-list"></i> View All Students</a>
-<a href="{% url 'add_student' %}" class="btn btn-success"><i class="fas fa-plus"></i> Add New Student</a>
+<!-- <a href="{% url 'add_student' %}" class="btn btn-success"><i class="fas fa-plus"></i> Add New Student</a> -->
 <a href="{% url 'profile' %}" class="btn btn-info"><i class="fas fa-user-circle"></i> My Profile</a>
 </div>
 </div>
@@ -103,8 +103,8 @@
 <i class="fas fa-clipboard-check"></i>
 </div>
 <div class="db-info">
-<h3>15/20</h3>
-<h6>Test Passed</h6>
+<h3>{% if dashboard_stat %}{{ dashboard_stat.completed }} / {{ dashboard_stat.total }}{% else %}0 / 0{% endif %}</h3>
+<h6>{% if dashboard_stat %}{{ dashboard_stat.status }}{% else %}No Data{% endif %}</h6>
 </div>
 </div>
 </div>
@@ -112,6 +112,117 @@
 </div>
 </div>
 
+<!-- Active Assignments and Assignment History Section -->
+<div class="row mb-4">
+<div class="col-12 col-lg-6 col-xl-6 d-flex">
+<div class="card flex-fill shadow-sm">
+<div class="card-header bg-primary text-white">
+<div class="d-flex align-items-center">
+<i class="fas fa-tasks mr-2"></i>
+<h5 class="card-title mb-0">Active Assignments</h5>
+</div>
+</div>
+<div class="card-body">
+<div class="table-responsive">
+<table class="table table-hover mb-0">
+<thead class="thead-light">
+<tr>
+<th><i class="fas fa-book mr-1"></i>Title</th>
+<th><i class="fas fa-calendar-alt mr-1"></i>Due Date</th>
+<th><i class="fas fa-info-circle mr-1"></i>Status</th>
+</tr>
+</thead>
+<tbody>
+{% for assignment in active_assignments %}
+<tr>
+<td class="font-weight-medium">{{ assignment.assignment.title }}</td>
+<td>
+<span class="text-muted">{{ assignment.assignment.due_date|date:"M d, Y" }}</span><br>
+<small class="text-primary">{{ assignment.assignment.due_time|time:"g:i a" }}</small>
+</td>
+<td>
+<span class="badge badge-pill {% if assignment.status == 'Not Started' %}badge-warning{% elif assignment.status == 'In Progress' %}badge-info{% else %}badge-danger{% endif %} px-2 py-1">
+{% if assignment.status == 'Not Started' %}
+<i class="fas fa-clock mr-1"></i>
+{% elif assignment.status == 'In Progress' %}
+<i class="fas fa-spinner fa-spin mr-1"></i>
+{% else %}
+<i class="fas fa-exclamation-triangle mr-1"></i>
+{% endif %}
+{{ assignment.status }}
+</span>
+</td>
+</tr>
+{% empty %}
+<tr>
+<td colspan="3" class="text-center py-4">
+<i class="fas fa-check-circle text-success fa-2x mb-2"></i>
+<p class="text-muted mb-0">No active assignments.</p>
+<p class="text-muted small">Great job staying on top of your work!</p>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<div class="col-12 col-lg-6 col-xl-6 d-flex">
+<div class="card flex-fill shadow-sm">
+<div class="card-header bg-success text-white">
+<div class="d-flex align-items-center">
+<i class="fas fa-history mr-2"></i>
+<h5 class="card-title mb-0">Assignment History</h5>
+</div>
+</div>
+<div class="card-body">
+<div class="table-responsive">
+<table class="table table-hover mb-0">
+<thead class="thead-light">
+<tr>
+<th><i class="fas fa-book mr-1"></i>Title</th>
+<th><i class="fas fa-calendar-check mr-1"></i>Submitted</th>
+<th><i class="fas fa-star mr-1"></i>Score</th>
+</tr>
+</thead>
+<tbody>
+{% for assignment in assignment_history %}
+<tr>
+<td class="font-weight-medium">{{ assignment.assignment.title }}</td>
+<td>
+<span class="text-muted">{{ assignment.submission_date|date:"M d, Y" }}</span>
+</td>
+<td>
+{% if assignment.score %}
+<div class="d-flex align-items-center">
+<strong class="text-success mr-2">{{ assignment.score }}/{{ assignment.assignment.total_points }}</strong>
+<div class="progress flex-grow-1" style="height: 6px;">
+<div class="progress-bar bg-success" role="progressbar" style="width: {{ assignment.progress_percentage }}%;" aria-valuenow="{{ assignment.score }}" aria-valuemin="0" aria-valuemax="{{ assignment.assignment.total_points }}"></div>
+</div>
+</div>
+{% else %}
+<span class="text-muted">—</span>
+{% endif %}
+</td>
+</tr>
+{% empty %}
+<tr>
+<td colspan="3" class="text-center py-4">
+<i class="fas fa-folder-open text-info fa-2x mb-2"></i>
+<p class="text-muted mb-0">No completed assignments yet.</p>
+<p class="text-muted small">Complete your first assignment to see it here!</p>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
 
 <div class="row">
 <div class="col-12 col-lg-12 col-xl-9">
@@ -128,52 +239,36 @@
 </div>
 <div class="dash-circle">
 <div class="row">
-<div class="col-12 col-lg-6 col-xl-6 dash-widget3">
-<div class="card-body dash-widget1">
-<div class="circle-bar circle-bar2">
-<div class="circle-graph2" data-percent="20">
-<b>20%</b>
+{% for course in today_courses %}
+<div class="col-12 col-lg-6 col-xl-6 {% if forloop.first %}dash-widget3{% else %}dash-widget4{% endif %}">
+<div class="card-body dash-widget1 {% if not forloop.first %}dash-widget2{% endif %}">
+<div class="circle-bar {% if forloop.first %}circle-bar2{% else %}circle-bar3{% endif %}">
+<div class="circle-graph{% if forloop.first %}2{% else %}3{% endif %}" data-percent="{{ course.progress_percent }}">
+<b>{{ course.progress_percent }}%</b>
 </div>
-<h6>Lesson Learned</h6>
-<h4>10 <span>/ 50</span></h4>
-</div>
-<div class="dash-details">
-<h4>Facilisi etiam</h4>
-<ul>
-<li><i class="fas fa-clock"></i> 2.30pm - 3.30pm</li>
-<li><i class="fas fa-book-open"></i> 5 Lessons</li>
-<li><i class="fas fa-hourglass-end"></i> 60 Minutes</li>
-<li><i class="fas fa-clipboard-check"></i> 5 Asignment</li>
-</ul>
-<div class="dash-btn">
-<button type="submit" class="btn btn-info btn-border">Skip</button>
-<button type="submit" class="btn btn-info">Continue</button>
-</div>
-</div>
-</div>
-</div>
-<div class="col-12 col-lg-6 col-xl-6 dash-widget4">
-<div class="card-body dash-widget1 dash-widget2">
-<div class="circle-bar circle-bar3">
-<div class="circle-graph3" data-percent="50">
-<b>50%</b>
-</div>
-<h6>Lesson Learned</h6>
-<h4>25 <span>/ 50</span></h4>
+<h6>{{ course.status }}</h6>
+<h4>{{ course.completed_lessons }} <span>/ {{ course.total_lessons }}</span></h4>
 </div>
 <div class="dash-details">
-<h4>Augue mauris</h4>
+<h4>{{ course.title }}</h4>
 <ul>
-<li><i class="fas fa-clock"></i> 3.30pm - 4.30pm</li>
-<li><i class="fas fa-book-open"></i> 6 Lessons</li>
-<li><i class="fas fa-hourglass-end"></i> 60 Minutes</li>
-<li><i class="fas fa-clipboard-check"></i> 6 Asignment</li>
+<li><i class="fas fa-clock"></i> {{ course.start_time|time:"g.i a" }} - {{ course.end_time|time:"g.i a" }}</li>
+<li><i class="fas fa-book-open"></i> {{ course.total_lessons }} Lessons</li>
+<li><i class="fas fa-hourglass-end"></i> {{ course.duration_minutes }} Minutes</li>
+<li><i class="fas fa-clipboard-check"></i> {{ course.assignment_count }} Assignment</li>
 </ul>
 <div class="dash-btn">
-<button type="submit" class="btn btn-info btn-border">Skip</button>
-<button type="submit" class="btn btn-info">Continue</button>
+<button type="button" class="btn btn-info btn-border">Skip</button>
+<button type="button" class="btn btn-info">Continue</button>
 </div>
 </div>
+</div>
+</div>
+{% empty %}
+<div class="col-12">
+<p class="text-center text-muted">No lessons available for today.</p>
+</div>
+{% endfor %}
 </div>
 </div>
 </div>
@@ -215,26 +310,15 @@
 <div class="card-body">
 <div class="teaching-card">
 <ul class="activity-feed">
+{% for history in learning_history %}
 <li class="feed-item">
-<div class="feed-date1">Sep 05, 9 am - 10 am (60min)</div>
-<span class="feed-text1"><a>Lorem ipsum dolor</a></span>
-<p><span>In Progress</span></p>
+<div class="feed-date1">{{ history.start_datetime|date:"M d, g a" }} - {{ history.end_datetime|time:"g a" }} ({{ history.duration_minutes }}min)</div>
+<span class="feed-text1"><a>{{ history.title }}</a></span>
+<p>{% if history.status == 'In Progress' %}<span>{{ history.status }}</span>{% else %}{{ history.status }}{% endif %}</p>
 </li>
-<li class="feed-item">
-<div class="feed-date1">Sep 04, 2 pm - 3 pm (70min)</div>
-<span class="feed-text1"><a>Et dolore magna</a></span>
-<p>Completed</p>
-</li>
-<li class="feed-item">
-<div class="feed-date1">Sep 02, 1 pm - 2 am (80min)</div>
-<span class="feed-text1"><a>Exercitation ullamco</a></span>
-<p><span>In Progress</span></p>
-</li>
-<li class="feed-item">
-<div class="feed-date1">Aug 30, 10 am - 12 pm (90min)</div>
-<span class="feed-text1"><a>Occaecat cupidatat</a></span>
-<p>Completed</p>
-</li>
+{% empty %}
+<li class="feed-item text-center text-muted">No learning history available.</li>
+{% endfor %}
 </ul>
 </div>
 </div>
@@ -254,26 +338,14 @@
 <div class="card-body">
 <div id="calendar-doctor" class="calendar-container"></div>
 <div class="calendar-info calendar-info1">
+{% for event in calendar_events %}
 <div class="calendar-details">
-<p>09 am</p>
-<h6 class="calendar-blue d-flex justify-content-between align-items-center">Fermentum <span>09am - 10pm</span></h6>
+<p>{{ event.start_datetime|time:"g a" }}</p>
+<h6 class="{{ event.color_class }} d-flex justify-content-between align-items-center">{{ event.title }} <span>{{ event.start_datetime|time:"ga" }} - {{ event.end_datetime|time:"ga" }}</span></h6>
 </div>
-<div class="calendar-details">
-<p>10 am</p>
-<h6 class="calendar-violet d-flex justify-content-between align-items-center">Pharetra et <span>10am - 11am</span></h6>
-</div>
-<div class="calendar-details">
-<p>11 am</p>
-<h6 class="calendar-red d-flex justify-content-between align-items-center">Break <span>11am - 11.30am</span></h6>
-</div>
-<div class="calendar-details">
-<p>12 pm</p>
-<h6 class="calendar-orange d-flex justify-content-between align-items-center">Massa <span>11.30am - 12.00pm</span></h6>
-</div>
-<div class="calendar-details">
-<p>09 am</p>
-<h6 class="calendar-blue d-flex justify-content-between align-items-center">Fermentum <span>09am - 10pm</span></h6>
-</div>
+{% empty %}
+<p class="text-center text-muted">No calendar events scheduled.</p>
+{% endfor %}
 </div>
 </div>
 </div>
@@ -305,7 +377,5 @@
 <script src="{%static 'assets/js/calander.js' %}"></script>
 
 <script src="{%static 'assets/js/circle-progress.min.js' %}"></script>
-
-<script src="{%static 'assets/js/script.js' %}"></script>
 
 {% endblock %}

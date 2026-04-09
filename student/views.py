@@ -5,6 +5,8 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from school.models import Notification
 from school.utils import create_notification
+from django.utils import timezone
+from django.db.models import Q
 
 
 
@@ -13,6 +15,9 @@ from school.utils import create_notification
 # Create your views here.
 
 def add_student(request):
+    if request.user.is_authenticated and request.user.is_student:
+        return HttpResponseForbidden("Students are not allowed to add students.")
+
     if request.method == "POST":
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
@@ -71,7 +76,7 @@ def add_student(request):
         )
         create_notification(request.user, f"Added Student: {student.first_name} {student.last_name}")
         messages.success(request, "Student added Successfully")
-        # return render(request, "student_list")
+        return redirect("student_list")
 
   
 
@@ -90,6 +95,9 @@ def student_list(request):
 
 
 def edit_student(request,slug):
+    if request.user.is_authenticated and request.user.is_student:
+        return HttpResponseForbidden("Students are not allowed to edit student records.")
+
     student = get_object_or_404(Student, slug=slug)
     parent = student.parent if hasattr(student, 'parent') else None
     if request.method == "POST":
@@ -134,7 +142,7 @@ def edit_student(request,slug):
         student.section = section
         student.student_image = student_image
         student.save()
-        create_notification(request.user, f"Added Student: {student.first_name} {student.last_name}")
+        create_notification(request.user, f"Updated Student: {student.first_name} {student.last_name}")
         
         return redirect("student_list")
     return render(request, "students/edit-student.html",{'student':student, 'parent':parent} )
@@ -142,13 +150,18 @@ def edit_student(request,slug):
 
 def view_student(request, slug):
     student = get_object_or_404(Student, student_id = slug)
+    learning_history = LearningHistory.objects.filter(student=student).order_by('-start_datetime')[:10]
     context = {
-        'student': student
+        'student': student,
+        'learning_history': learning_history
     }
     return render(request, "students/student-details.html", context)
 
 
 def delete_student(request,slug):
+    if request.user.is_authenticated and request.user.is_student:
+        return HttpResponseForbidden("Students are not allowed to delete student records.")
+
     if request.method == "POST":
         student = get_object_or_404(Student, slug=slug)
         student_name = f"{student.first_name} {student.last_name}"
@@ -173,15 +186,77 @@ def student_dashboard(request):
     total_students = Student.objects.count()
     total_classes = len(set(Student.objects.values_list('student_class', flat=True)))
     total_subjects = 0  # Can be updated if Subject model exists
-    
+
+    today_courses = []
+    learning_history = []
+    calendar_events = []
+    dashboard_stat = None
+    if student:
+        today_courses = CourseProgress.objects.filter(
+            student_class=student.student_class,
+            section=student.section
+        ).order_by('start_time')[:2]
+        learning_history = LearningHistory.objects.filter(student=student).order_by('-start_datetime')[:4]
+        calendar_events = CalendarEvent.objects.filter(student=student).order_by('start_datetime')[:5]
+        if today_courses:
+            current = today_courses[0]
+            dashboard_stat = {
+                'completed': current.completed_lessons,
+                'total': current.total_lessons,
+                'status': current.status,
+                'percent': current.progress_percent,
+            }
+
     unread_notification = Notification.objects.filter(user=request.user, is_read=False)
+    
+    active_assignments = []
+    assignment_history = []
+    
+    if student:
+        # Auto-assign new assignments from teacher if not already assigned
+        all_class_assignments = Assignment.objects.filter(
+            student_class=student.student_class,
+            section=student.section
+        )
+        for assignment in all_class_assignments:
+            StudentAssignment.objects.get_or_create(
+                student=student,
+                assignment=assignment,
+                defaults={'status': 'Not Started'}
+            )
+        
+        # Get active assignments (not completed)
+        active_assignments = StudentAssignment.objects.filter(
+            student=student
+        ).exclude(
+            status__in=['Completed']
+        ).order_by('assignment__due_date')[:5]
+        
+        # Get assignment history (completed assignments)
+        assignment_history = StudentAssignment.objects.filter(
+            student=student,
+            status='Completed'
+        ).order_by('-assignment__due_date')[:5]
+        
+        # Calculate progress percentage for assignment history
+        for assignment in assignment_history:
+            if assignment.score and assignment.assignment.total_points:
+                assignment.progress_percentage = int((assignment.score / assignment.assignment.total_points) * 100)
+            else:
+                assignment.progress_percentage = 0
+    
     context = {
         'student': student,
         'total_students': total_students,
         'total_classes': total_classes,
         'total_subjects': total_subjects,
+        'today_courses': today_courses,
+        'dashboard_stat': dashboard_stat,
+        'learning_history': learning_history,
+        'calendar_events': calendar_events,
+        'active_assignments': active_assignments,
+        'assignment_history': assignment_history,
         'unread_notification': unread_notification,
         'unread_notification_count': unread_notification.count()
     }
     return render(request, "students/student-dashboard.html", context)
-
